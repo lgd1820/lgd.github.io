@@ -1,7 +1,0 @@
-I"@<h1 id="개발-환경">개발 환경</h1>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>운영체제 : ubuntu 20 lts
-GPU : RTX3080
-</code></pre></div></div>
-<p>현재 설치한 k8s와 kubeflow 는 컴퓨터 한대에서 설치를 하였습니다.<br />
-<br /></p>
-:ET
