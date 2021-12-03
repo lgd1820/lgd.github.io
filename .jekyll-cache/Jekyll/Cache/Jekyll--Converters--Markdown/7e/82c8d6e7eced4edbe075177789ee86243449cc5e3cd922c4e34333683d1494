@@ -1,0 +1,46 @@
+I"<h1 id="문제-설명">문제 설명</h1>
+
+<p>문자열 s는 한 개 이상의 단어로 구성되어 있습니다. 각 단어는 하나 이상의 공백문자로 구분되어 있습니다. 각 단어의 짝수번째 알파벳은 대문자로, 홀수번째 알파벳은 소문자로 바꾼 문자열을 리턴하는 함수, solution을 완성하세요.</p>
+
+<p>제한 사항</p>
+<ul>
+  <li>문자열 전체의 짝/홀수 인덱스가 아니라, 단어(공백을 기준)별로 짝/홀수 인덱스를 판단해야합니다.</li>
+  <li>첫 번째 글자는 0번째 인덱스로 보아 짝수번째 알파벳으로 처리해야 합니다.</li>
+</ul>
+
+<p>입출력 예</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>s</th>
+      <th>return</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“try hello world”</td>
+      <td>“TrY HeLlO WoRlD”</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>입출력 예 설명<br />
+“try hello world”는 세 단어 “try”, “hello”, “world”로 구성되어 있습니다. 각 단어의 짝수번째 문자를 대문자로, 홀수번째 문자를 소문자로 바꾸면 “TrY”, “HeLlO”, “WoRlD”입니다. 따라서 “TrY HeLlO WoRlD” 를 리턴합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">solution</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="s">''</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">" "</span><span class="p">:</span> 
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">answer</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="k">elif</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">answer</span> <span class="o">+=</span> <span class="n">c</span><span class="p">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">answer</span> <span class="o">+=</span> <span class="n">c</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">answer</span>
+</code></pre></div></div>
+:ET
