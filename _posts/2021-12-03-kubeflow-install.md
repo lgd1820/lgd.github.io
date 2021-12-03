@@ -1,7 +1,9 @@
 ---
-title: "kubeflow 설치"
+title: "kubernetes 설치"
+excerpt: "kubeflow를 사용하기 위한 kubeflow 설치"
 categories: kubeflow
 tags: kubernetes kubeflow MLOps
+
 ---
 
 개발 환경
