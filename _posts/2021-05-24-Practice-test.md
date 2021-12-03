@@ -1,15 +1,14 @@
 ---
 layout: post
 title: "모의고사"
-excerpt: "프로그래머스에 있는 모의고사 문제"
-
-categories:
+excerpt : "프로그래머스의 모의고사 문제"
+categories: 
  - programmers
 tags:
- - [programmers]
+ - programmers
 
-date: 2021-05-24
-last_modified_at : 2021-05-24
+last_modified_at: 2021-05-24
+author_profile: true
 ---
 # 문제 설명
 
