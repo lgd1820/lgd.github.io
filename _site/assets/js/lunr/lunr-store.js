@@ -256,4 +256,10 @@ var store = [{
         "tags": ["programmers"],
         "url": "/programmers/couple-remove/",
         "teaser": null
+      },{
+        "title": "kubeflow 설치",
+        "excerpt":"개발 환경 운영체제 : ubuntu 20 lts GPU : RTX3080 현재 설치한 k8s와 kubeflow 는 컴퓨터 한대에서 설치를 하였습니다. 도커 설치 및 설정 # 우분투에서 도커를 설치 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release...","categories": ["kubeflow"],
+        "tags": ["kubernetes","kubeflow","MLOps"],
+        "url": "/kubeflow/kubeflow-install/",
+        "teaser": null
       }]

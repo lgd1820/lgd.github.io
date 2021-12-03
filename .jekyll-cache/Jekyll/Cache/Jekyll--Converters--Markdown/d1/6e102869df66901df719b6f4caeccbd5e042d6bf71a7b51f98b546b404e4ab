@@ -1,0 +1,101 @@
+I"K<h1 id="개발-환경">개발 환경</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>운영체제 : ubuntu 20 lts
+GPU : RTX3080
+</code></pre></div></div>
+<p>현재 설치한 k8s와 kubeflow 는 컴퓨터 한대에서 설치를 하였습니다.<br />
+<br /></p>
+
+<h1 id="도커-설치-및-설정">도커 설치 및 설정</h1>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 우분투에서 도커를 설치</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+curl <span class="nt">-fsSL</span> https://download.docker.com/linux/ubuntu/gpg | <span class="nb">sudo </span>apt-key add -
+<span class="nb">sudo </span>add-apt-repository <span class="s2">"deb [arch=amd64] https://download.docker.com/linux/ubuntu </span><span class="si">$(</span>lsb_release <span class="nt">-cs</span><span class="si">)</span><span class="s2"> stable"</span>
+<span class="nb">sudo </span>apt-get update
+
+<span class="c"># 특정 버전을 설치하시고 싶을 때</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\</span>
+docker-ce<span class="o">=</span>5:18.09.9~3-0~ubuntu-bionic <span class="se">\</span>
+docker-ce-cli<span class="o">=</span>5:18.09.9~3-0~ubuntu-bionic <span class="se">\</span>
+containerd.io
+
+<span class="c"># 현재 맞는 최신 버전을 설치하시고 싶을 때</span>
+<span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\</span>
+docker-ce <span class="se">\</span>
+docker-ce-cli <span class="se">\</span>
+containerd.io
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 쿠버네티스를 위한 도커 설정</span>
+
+<span class="nb">sudo </span>su
+<span class="nb">cat</span> <span class="o">&gt;</span> /etc/docker/daemon.json <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+</span><span class="no">EOF
+</span><span class="nb">mkdir</span> <span class="nt">-p</span> /etc/systemd/system/docker.service.d
+systemctl daemon-reload
+systemctl restart docker
+<span class="nb">exit</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 컨테이너에서 GPU 사용을 위한 nvidia-plugin 설치</span>
+<span class="nv">release</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="si">$(</span>lsb_release <span class="nt">-sr</span> | <span class="nb">sed</span> <span class="nt">-e</span> <span class="s2">"s/</span><span class="se">\.</span><span class="s2">//g"</span><span class="si">)</span>
+<span class="nb">sudo </span>apt <span class="nb">install sudo </span>gnupg
+<span class="nb">sudo </span>apt-key adv <span class="nt">--fetch-keys</span> <span class="s2">"http://developer.download.nvidia.com/compute/cuda/repos/"</span><span class="nv">$release</span><span class="s2">"/x86_64/7fa2af80.pub"</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/'</span><span class="nv">$release</span><span class="s1">'/x86_64 /" &gt; /etc/apt/sources.list.d/nvidia-cuda.list'</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/'</span><span class="nv">$release</span><span class="s1">'/x86_64 /" &gt; /etc/apt/sources.list.d/nvidia-machine-learning.list'</span>
+<span class="nb">sudo </span>apt update
+apt-cache search nvidia
+
+<span class="c"># 택 1</span>
+<span class="nt">-----------------------------------</span>
+<span class="c"># 알맞는 버전 찾아서 설치</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> nvidia-XXX
+
+<span class="c"># 자동 설치</span>
+<span class="nb">sudo </span>ubuntu-drivers autoinstall
+<span class="nt">-----------------------------------</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> dkms nvidia-modprobe
+
+<span class="nb">sudo </span>reboot
+<span class="nb">sudo cat</span> /proc/driver/nvidia/version | nvidia-smi
+curl <span class="nt">-s</span> <span class="nt">-L</span> https://nvidia.github.io/nvidia-docker/gpgkey | <span class="nb">sudo </span>apt-key add -
+<span class="nv">distribution</span><span class="o">=</span><span class="si">$(</span><span class="nb">.</span> /etc/os-release<span class="p">;</span><span class="nb">echo</span> <span class="nv">$ID$VERSION_ID</span><span class="si">)</span>
+curl <span class="nt">-s</span> <span class="nt">-L</span> https://nvidia.github.io/nvidia-docker/<span class="nv">$distribution</span>/nvidia-docker.list | <span class="nb">sudo tee</span> /etc/apt/sources.list.d/nvidia-docker.list
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> nvidia-docker2
+
+<span class="c"># daemon.json에 추가</span>
+<span class="nv">$ </span><span class="nb">sudo </span>vi /etc/docker/daemon.json
+   <span class="s2">"default-runtime"</span>: <span class="s2">"nvidia"</span>,
+    <span class="s2">"runtimes"</span>: <span class="o">{</span>
+        <span class="s2">"nvidia"</span>: <span class="o">{</span>
+            <span class="s2">"path"</span>: <span class="s2">"nvidia-container-runtime"</span>,
+            <span class="s2">"runtimeArgs"</span>: <span class="o">[]</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+<span class="nb">sudo </span>systemctl restart docker
+<span class="nb">sudo </span>docker run <span class="nt">--runtime</span><span class="o">=</span>nvidia <span class="nt">--rm</span> nvidia/cuda nvidia-smi
+</code></pre></div></div>
+<p><br /></p>
+
+<h1 id="쿠버네티스-설치">쿠버네티스 설치</h1>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-s</span> https://packages.cloud.google.com/apt/doc/apt-key.gpg | <span class="nb">sudo </span>apt-key add
+<span class="nb">sudo </span>apt-add-repository <span class="s2">"deb http://apt.kubernetes.io/ kubernetes-xenial main"</span>
+
+<span class="c"># 특정 버전을 설치하고 싶을 때 (이 실습에서는 1.19.16-00)</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="nv">kubelet</span><span class="o">=</span>1.18.5-00 <span class="nv">kubeadm</span><span class="o">=</span>1.18.5-00 <span class="nv">kubectl</span><span class="o">=</span>1.18.5-00
+
+<span class="c"># 현재 맞는 최신 버전을 설치하시고 싶을 때</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> kubelet kubeadm kubectl
+
+<span class="c"># 업데이트 방지</span>
+<span class="nb">sudo </span>apt-mark hold kubelet kubeadm kubectl
+</code></pre></div></div>
+:ET
